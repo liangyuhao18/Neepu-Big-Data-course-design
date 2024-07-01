@@ -3,6 +3,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import unix_timestamp, col
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.regression import LinearRegression
+
+from Temtable import createtable
+
 findspark.init()
 
 # 初始化SparkSession
@@ -11,15 +14,14 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # 加载数据
-file_path = "us-counties.csv"
-data = spark.read.csv(file_path, header=True, inferSchema=True)
-
+createtable()
+data=spark.sql("select date,cases,deaths from table where fips= 53061")
+data.show()
 # 查看数据结构
 data.printSchema()
 
 # 转换日期为时间戳
 data = data.withColumn("date", unix_timestamp(col("date"), "yyyy-MM-dd"))
-
 # 处理缺失值
 data = data.dropna(subset=["cases", "deaths"])
 
