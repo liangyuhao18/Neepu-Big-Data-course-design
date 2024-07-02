@@ -1,9 +1,14 @@
 import sys
+
+import findspark
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from pyspark.sql import SparkSession
 
+from Draw import drawline
 from GUItest01 import Ui_MainWindow
+from Temtable import createtable
 
 states = {
     "阿拉巴马州": "Alabama",
@@ -63,10 +68,18 @@ class MyMainWindows(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        findspark.init()
+        self.spark = SparkSession.builder.appName("BigData").getOrCreate()
+        createtable()
 
     def returnstate(self):
-        print(self.comboBox.currentText())
-        print(states[self.comboBox.currentText()])
+        state=states[self.comboBox.currentText()]
+        title="美国"+self.comboBox.currentText()+"疫情折线图"
+        data=self.spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table where state={zhou} group by date order by date asc",zhou=state)
+        x_data = [row['date'] for row in data.collect()]
+        y_data = [row['cases'] for row in data.collect()]
+        y_data2 = [row['deaths'] for row in data.collect()]
+        drawline(title, x_data, y_data, y_data2)
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)

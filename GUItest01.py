@@ -52,13 +52,3 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "PushButton"))
         self.label.setText(_translate("MainWindow", "请选择州"))
-
-
-if __name__ == '__main__':
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    app = QtWidgets.QApplication(sys.argv)
-    mainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(mainWindow)
-    mainWindow.show()
-    sys.exit(app.exec())
