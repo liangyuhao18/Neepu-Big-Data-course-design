@@ -1,6 +1,6 @@
 import webbrowser
 import findspark
-from pyecharts.charts import Line, Bar, Map
+from pyecharts.charts import Line, Bar, Map, Pie
 from pyecharts import options as opts
 from pyspark.sql import SparkSession
 from Temtable import createtable
@@ -111,6 +111,22 @@ def drawmap(title,data):
     .render("map.html")
     )
     webbrowser.open("map.html")
+def drawpie(title,data):
+    pie = (
+        Pie(init_opts=opts.InitOpts(width="1600px", height="850px"))
+        .add(
+            "",
+            data,
+            center=["40%", "50%"],
+        )
+        .set_global_opts(
+            title_opts=opts.TitleOpts(title="Pie-Legend 滚动"),
+            legend_opts=opts.LegendOpts(type_="scroll", pos_left="80%", orient="vertical"),
+        )
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+        .render("pie_scroll_legend.html")
+    )
+    webbrowser.open("pie_scroll_legend.html")
 
 # 初始化 findspark 和 SparkSession
 findspark.init()
@@ -137,3 +153,5 @@ drawbar('美国各州疫情柱状图',x_data,y_data,y_data2)
 mapdata=spark.sql("select state,sum(cases) cases from table group by state order by cases")
 mpdata=mapdata.collect()
 drawmap("图",mpdata)
+
+drawpie("图",mpdata)
