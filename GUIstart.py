@@ -7,10 +7,11 @@ from PyQt5.QtWidgets import *
 from pyspark.sql import SparkSession
 
 from Draw import drawline
-from GUItest01 import Ui_MainWindow
+from GUItest02 import Ui_MainWindow
 from Temtable import createtable
 
 states = {
+    "美国全境": "America",
     "阿拉巴马州": "Alabama",
     "阿拉斯加州": "Alaska",
     "亚利桑那州": "Arizona",
@@ -74,12 +75,20 @@ class MyMainWindows(QMainWindow, Ui_MainWindow):
 
     def returnstate(self):
         state=states[self.comboBox.currentText()]
+        self.returndate()
         title="美国"+self.comboBox.currentText()+"疫情折线图"
         data=self.spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table where state={zhou} group by date order by date asc",zhou=state)
         x_data = [row['date'] for row in data.collect()]
         y_data = [row['cases'] for row in data.collect()]
         y_data2 = [row['deaths'] for row in data.collect()]
         drawline(title, x_data, y_data, y_data2)
+
+    def returndate(self):
+        date1 = self.dateEdit.date().toString("yyyy-MM-dd")
+        date2 = self.dateEdit_2.date().toString("yyyy-MM-dd")
+        date = [date1, date2]
+        print(date)
+        return date
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
