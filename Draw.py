@@ -114,8 +114,8 @@ def drawmap(title, data,data2):
             trigger="item", formatter="{b}<br/>{c} cases"
         ),
         visualmap_opts=opts.VisualMapOpts(
-            min_=data,
-            max_=data,
+            min_=0,
+            max_=3000000000,
             range_text=["High", "Low"],
             is_calculable=True,
             range_color=["lightskyblue", "yellow", "orangered"],
@@ -147,26 +147,26 @@ if __name__ == '__main__':
 
     # 创建数据表
     createtable()
-    # # 从表中选择数据并展示
-    # data = spark.sql(
-    #     "select date,sum(cases) cases,sum(deaths) deaths from table where state='California' group by date order by date asc")
-    # data.show()
-    # # 提取数据到列表
-    # x_data = [row['date'] for row in data.collect()]
-    # y_data = [row['cases'] for row in data.collect()]
-    # y_data2 = [row['deaths'] for row in data.collect()]
-    # drawline('美国加州疫情折线图', x_data, y_data, y_data2)
+    # 从表中选择数据并展示
+    data = spark.sql(
+        "select date,sum(cases) cases,sum(deaths) deaths from table where state='California' group by date order by date asc")
+    data.show()
+    # 提取数据到列表
+    x_data = [row['date'] for row in data.collect()]
+    y_data = [row['cases'] for row in data.collect()]
+    y_data2 = [row['deaths'] for row in data.collect()]
+    drawline('美国加州疫情折线图', x_data, y_data, y_data2)
     #
-    # bardata = spark.sql("select state,sum(cases) cases,sum(deaths) deaths from table group by state order by cases asc")
-    # bardata.show()
-    # x_data = [row['state'] for row in bardata.collect()]
-    # y_data = [row['cases'] for row in bardata.collect()]
-    # y_data2 = [row['deaths'] for row in bardata.collect()]
-    # drawbar('从2020-01-21到2022-05-13美国各州疫情柱状图', x_data, y_data, y_data2)
+    bardata = spark.sql("select state,sum(cases) cases,sum(deaths) deaths from table group by state order by cases asc")
+    bardata.show()
+    x_data = [row['state'] for row in bardata.collect()]
+    y_data = [row['cases'] for row in bardata.collect()]
+    y_data2 = [row['deaths'] for row in bardata.collect()]
+    drawbar('从2020-01-21到2022-05-13美国各州疫情柱状图', x_data, y_data, y_data2)
 
     mapdata = spark.sql("select state,sum(cases) cases from table group by state order by cases")
     mapdata2 = spark.sql("select state,sum(deaths) deaths from table group by state order by deaths")
     mpdata = mapdata.collect()
     mpdata2 = mapdata2.collect()
     drawmap("图", mpdata,mpdata2)
-    # drawpie("图",mpdata)
+    drawpie("图",mpdata)

@@ -15,10 +15,7 @@ spark = SparkSession.builder \
 
 # 加载数据
 createtable()
-data=spark.sql("select date,cases,deaths from table where fips= 53061")
-data.show()
-# 查看数据结构
-data.printSchema()
+data=spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table where state ='California' group by date order by date")
 
 # 转换日期为时间戳
 data = data.withColumn("date", unix_timestamp(col("date"), "yyyy-MM-dd"))
@@ -48,32 +45,20 @@ lr_deaths = LinearRegression(featuresCol="features", labelCol="deaths", regParam
 lr_model_deaths = lr_deaths.fit(train_data_deaths)
 
 # 打印模型参数
-# print(f"Cases Model Coefficients: {lr_model_cases.coefficients}")
-# print(f"Cases Model Intercept: {lr_model_cases.intercept}")
-# print(f"Deaths Model Coefficients: {lr_model_deaths.coefficients}")
-# print(f"Deaths Model Intercept: {lr_model_deaths.intercept}")
+print(f"Cases Model Coefficients: {lr_model_cases.coefficients}")
+print(f"Cases Model Intercept: {lr_model_cases.intercept}")
+print(f"Deaths Model Coefficients: {lr_model_deaths.coefficients}")
+print(f"Deaths Model Intercept: {lr_model_deaths.intercept}")
 
 # 评估模型
 test_results_cases = lr_model_cases.evaluate(test_data_cases)
-# print(f"Cases Model RMSE: {test_results_cases.rootMeanSquaredError}")
-# print(f"Cases Model R2: {test_results_cases.r2}")
+print(f"Cases Model RMSE: {test_results_cases.rootMeanSquaredError}")
+print(f"Cases Model R2: {test_results_cases.r2}")
 
 test_results_deaths = lr_model_deaths.evaluate(test_data_deaths)
-# print(f"Deaths Model RMSE: {test_results_deaths.rootMeanSquaredError}")
-# print(f"Deaths Model R2: {test_results_deaths.r2}")
+print(f"Deaths Model RMSE: {test_results_deaths.rootMeanSquaredError}")
+print(f"Deaths Model R2: {test_results_deaths.r2}")
 
-# 打印系数的显著性检验结果
-def print_significance_test(lr_model, label):
-    print(f"\n{label} Model Significance Test Results:")
-    summary = lr_model.summary
-    print(f"Degrees of freedom: {summary.degreesOfFreedom}")
-    print(f"Residuals: {summary.residuals.show()}")
-    print(f"p-values: {summary.pValues}")
-    print(f"t-values: {summary.tValues}")
-
-# 打印cases和deaths模型的显著性检验结果
-print_significance_test(lr_model_cases, "Cases")
-print_significance_test(lr_model_deaths, "Deaths")
-
+lr_model_cases.write().overwrite().save("file:///E:\\pythonproject\\bigdata\\bigdata\\lr_model_cases")
 # 停止SparkSession
 spark.stop()
