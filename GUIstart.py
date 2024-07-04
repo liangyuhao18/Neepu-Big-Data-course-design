@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from pyspark.sql import SparkSession
 
 from Draw import drawline
-from GUItest02 import Ui_MainWindow
+from GUItest01 import Ui_MainWindow
 from Temtable import createtable
 
 states = {
