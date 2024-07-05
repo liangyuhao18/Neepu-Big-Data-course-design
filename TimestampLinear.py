@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import unix_timestamp, col
 from pyspark.ml.feature import VectorAssembler
 
-
+from Draw import drawline
 from Temtable import createtable
 if __name__ == "__main__":
     findspark.init()
@@ -17,23 +17,23 @@ if __name__ == "__main__":
 
     # 加载数据
     createtable()
-    data=spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table where state ='California' group by date order by date")
+    data=spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table group by date order by date")
 
     # 转换日期为时间戳
-    data = data.withColumn("date", unix_timestamp(col("date"), "yyyy-MM-dd"))
+    data = data.withColumn("timestamp", unix_timestamp(col("date"), "yyyy-MM-dd"))
     # 处理缺失值
     data = data.dropna(subset=["cases", "deaths"])
 
     # 选择特征和标签
-    data_cases = data.select("date", "cases")
-    data_deaths = data.select("date", "deaths")
+    data_cases = data.select("date","timestamp", "cases")
+    data_deaths = data.select("date","timestamp", "deaths")
 
     # 将数据转换为特征向量
-    assembler_cases = VectorAssembler(inputCols=["date"], outputCol="features")
-    data_cases = assembler_cases.transform(data_cases).select("features", "cases")
+    assembler_cases = VectorAssembler(inputCols=["timestamp"], outputCol="features")
+    data_cases = assembler_cases.transform(data_cases)
 
-    assembler_deaths = VectorAssembler(inputCols=["date"], outputCol="features")
-    data_deaths = assembler_deaths.transform(data_deaths).select("features", "deaths")
+    assembler_deaths = VectorAssembler(inputCols=["timestamp"], outputCol="features")
+    data_deaths = assembler_deaths.transform(data_deaths)
 
     # 划分数据集
     train_data_cases, test_data_cases = data_cases.randomSplit([0.8, 0.2])
@@ -61,8 +61,13 @@ if __name__ == "__main__":
     print(f"Deaths Model RMSE: {test_results_deaths.rootMeanSquaredError}")
     print(f"Deaths Model R2: {test_results_deaths.r2}")
 
-    predictions = lr_model_cases.transform(test_data_cases)
+    predictions = lr_model_cases.transform(data_cases)
     predictions.show()
+    x_data = [row['date'] for row in predictions.collect()]
+    y_data = [row['cases'] for row in predictions.collect()]
+    y_data2 = [row['prediction'] for row in predictions.collect()]
+    drawline("时间戳预测",x_data,y_data,y_data2)
+
     # 选择样本进行显示
     lr_model_cases.write().overwrite().save("./ts_lr_model_cases")
     lr_model_deaths.write().overwrite().save("./ts_lr_model.deaths")
