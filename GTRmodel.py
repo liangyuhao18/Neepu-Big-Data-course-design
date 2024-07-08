@@ -96,7 +96,7 @@ if __name__ == "__main__":
     gbt_model = myGBTRegressionModel()
     data = gbt_model.spark.sql("select date, sum(cases) as cases, sum(deaths) as deaths from table group by date order by date")
     data = gbt_model.load_and_prepare_data(data)
-    gbt_model.load_model("./gbt_regresss_model")
+    gbt_model.load_model("./gbt_regression_model")
     predictions = gbt_model.make_predictions(180)
     gbt_model.plot_predictions(data, predictions)
     gbt_model.stop_spark()
