@@ -64,14 +64,31 @@ states = {
     "怀俄明州": "Wyoming"
 }
 
+
 class MyMainWindows(QMainWindow, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        findspark.init()
-        self.spark = SparkSession.builder.appName("BigData").getOrCreate()
-        createtable()
+        # findspark.init()
+        # self.spark = SparkSession.builder.appName("BigData").getOrCreate()
+        # createtable()
 
+    def showhistory(self):
+        date1 = self.dateEdit.date().toString("yyyy-MM-dd")
+        date2 = self.dateEdit_2.date().toString("yyyy-MM-dd")
+
+    def getdata(self):
+        print("hello, data")
+
+    def returndate(self):
+        date1 = self.dateEdit.date().toString("yyyy-MM-dd")
+        date2 = self.dateEdit_2.date().toString("yyyy-MM-dd")
+        date = [date1, date2]
+        print(date)
+        return date
+
+    def predict(self):
+        print("hello,predict")
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
