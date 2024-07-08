@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtCore import QDateTime, QDate, QTime
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
@@ -55,6 +56,7 @@ class Ui_Form(object):
         self.dateEdit_2 = QtWidgets.QDateEdit(self.verticalLayoutWidget)
         self.dateEdit_2.setMaximumDate(QtCore.QDate(2022, 5, 13))
         self.dateEdit_2.setMinimumDate(QtCore.QDate(2020, 1, 21))
+        self.dateEdit_2.setDateTime(QDateTime(QDate(2022, 5, 13), QTime(0, 0, 0)))
         self.dateEdit_2.setObjectName("dateEdit_2")
         self.verticalLayout.addWidget(self.dateEdit_2)
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.tab)
@@ -131,7 +133,7 @@ class Ui_Form(object):
         self.verticalLayout_3.addWidget(self.label_4)
         self.comboBox_3 = QtWidgets.QComboBox(self.verticalLayoutWidget_2)
         self.comboBox_3.setObjectName("comboBox_3")
-        self.comboBox_3.addItems(["线性回归模型", "随机森林回归", "梯度上升决策树回归"])
+        self.comboBox_3.addItems(["线性回归模型", "随机森林回归模型", "梯度上升决策树回归模型"])
         self.verticalLayout_3.addWidget(self.comboBox_3)
         self.label_6 = QtWidgets.QLabel(self.tab_2)
         self.label_6.setGeometry(QtCore.QRect(100, 30, 111, 51))

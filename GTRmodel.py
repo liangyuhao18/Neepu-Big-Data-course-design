@@ -12,10 +12,11 @@ import pandas as pd
 
 
 class myGBTRegressionModel:
-    def __init__(self):
+    def __init__(self,pre):
         findspark.init()
         self.spark = SparkSession.builder.appName("TimeSeriesRegression").getOrCreate()
         createtable()
+        self.type=pre
 
     def load_and_prepare_data(self, data):
         data.show()
@@ -41,11 +42,14 @@ class myGBTRegressionModel:
         train_data, test_data = data.randomSplit([0.8, 0.2])
 
         # 训练梯度提升树回归模型
-        gbt = GBTRegressor(featuresCol="features", labelCol="cases", maxIter=150)
+        gbt = GBTRegressor(featuresCol="features", labelCol=self.type, maxIter=150)
         self.gbt_model = gbt.fit(train_data)
 
         # 显示模型参数
         print("Feature Importances: " + str(self.gbt_model.featureImportances))
+
+        predictions=self.gbt_model.transform(test_data)
+        self.evaluate_model(predictions)
 
         return train_data, test_data
 
@@ -65,14 +69,14 @@ class myGBTRegressionModel:
     def plot_predictions(self,data,predictions):
         # 提取预测结果用于绘图
         x_data = [row['date'] for row in predictions.collect()]
-        y_data = [row['cases'] for row in data.collect()]
+        y_data = [row[self.type] for row in data.collect()]
         y_data2 = [row['prediction'] for row in predictions.collect()]
 
         drawline("预测图", x_data, y_data, y_data2)
 
     def evaluate_model(self, predictions):
         # 评估模型
-        evaluator = RegressionEvaluator(labelCol="cases", predictionCol="prediction", metricName="rmse")
+        evaluator = RegressionEvaluator(labelCol=self.type, predictionCol="prediction", metricName="rmse")
         rmse = evaluator.evaluate(predictions)
         print("Root Mean Squared Error (RMSE) on test data = %g" % rmse)
 
@@ -93,10 +97,11 @@ class myGBTRegressionModel:
 
 # 使用示例
 if __name__ == "__main__":
-    gbt_model = myGBTRegressionModel()
+    gbt_model = myGBTRegressionModel("cases")
     data = gbt_model.spark.sql("select date, sum(cases) as cases, sum(deaths) as deaths from table group by date order by date")
     data = gbt_model.load_and_prepare_data(data)
-    gbt_model.load_model("./gbt_regression_model")
+    gbt_model.train_model(data)
     predictions = gbt_model.make_predictions(180)
     gbt_model.plot_predictions(data, predictions)
+    gbt_model.save_model("./gtr_cases_model")
     gbt_model.stop_spark()

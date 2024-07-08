@@ -14,10 +14,11 @@ from Temtable import createtable
 import pandas as pd
 
 class myRandomForestModel:
-    def __init__(self):
+    def __init__(self,pre):
         findspark.init()
         self.spark = SparkSession.builder.appName("TimeSeriesRegression").getOrCreate()
         createtable()
+        self.type=pre
 
     def load_and_prepare_data(self,data):
         data.show()
@@ -43,11 +44,14 @@ class myRandomForestModel:
         train_data, test_data = data.randomSplit([0.8, 0.2])
 
         # 训练随机森林回归模型
-        rf = RandomForestRegressor(featuresCol="features", labelCol="cases", numTrees=150)
+        rf = RandomForestRegressor(featuresCol="features", labelCol=self.type, numTrees=150)
         self.rf_model = rf.fit(train_data)
 
         # 显示模型参数
         print("Feature Importances: " + str(self.rf_model.featureImportances))
+
+        predictions = self.rf_model.transform(test_data)
+        self.evaluate_model(predictions)
 
         return train_data, test_data
 
@@ -67,7 +71,7 @@ class myRandomForestModel:
     def plot_predictions(self,data,predictions):
         # 提取预测结果用于绘图
         x_data = [row['date'] for row in predictions.collect()]
-        y_data = [row['cases'] for row in data.collect()]
+        y_data = [row[self.type] for row in data.collect()]
         y_data2 = [row['prediction'] for row in predictions.collect()]
 
         drawline("预测图", x_data, y_data, y_data2)
@@ -83,7 +87,7 @@ class myRandomForestModel:
         print(f"Model loaded from {path}")
     def evaluate_model(self, predictions):
         # 评估模型
-        evaluator = RegressionEvaluator(labelCol="cases", predictionCol="prediction", metricName="rmse")
+        evaluator = RegressionEvaluator(labelCol=self.type, predictionCol="prediction", metricName="rmse")
         rmse = evaluator.evaluate(predictions)
         print("Root Mean Squared Error (RMSE) on test data = %g" % rmse)
 
@@ -94,11 +98,11 @@ class myRandomForestModel:
 
 # 使用示例
 if __name__ == "__main__":
-    rf_model = myRandomForestModel()
+    rf_model = myRandomForestModel("deaths")
     data = rf_model.spark.sql("select date, sum(cases) as cases, sum(deaths) as deaths from table group by date order by date")
     data = rf_model.load_and_prepare_data(data)
     train_data, test_data = rf_model.train_model(data)
     predictions = rf_model.make_predictions(180)
     rf_model.plot_predictions(data,predictions)
-    rf_model.save_model("./rf_regression_model")
+    rf_model.save_model("./rf_regression_deaths_model")
     rf_model.stop_spark()
