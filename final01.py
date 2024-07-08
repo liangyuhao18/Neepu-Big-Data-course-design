@@ -133,6 +133,16 @@ class Ui_Form(object):
         self.comboBox_3.setObjectName("comboBox_3")
         self.comboBox_3.addItems(["线性回归模型", "随机森林回归", "梯度上升决策树回归"])
         self.verticalLayout_3.addWidget(self.comboBox_3)
+        self.label_10 = QLabel(self.verticalLayoutWidget_2)
+        self.label_10.setObjectName(u"label_10")
+
+        self.verticalLayout_3.addWidget(self.label_10)
+
+        self.comboBox_4 = QComboBox(self.verticalLayoutWidget_2)
+        self.comboBox_4.setObjectName(u"comboBox_4")
+        self.comboBox_4.addItems(["病例数", "死亡数"])
+        self.verticalLayout_3.addWidget(self.comboBox_4)
+
         self.label_6 = QtWidgets.QLabel(self.tab_2)
         self.label_6.setGeometry(QtCore.QRect(100, 30, 111, 51))
         font = QtGui.QFont()
@@ -168,4 +178,5 @@ class Ui_Form(object):
         self.label_8.setText(_translate("Form", "自2022-05-13开始"))
         self.label_4.setText(_translate("Form", "请选择你使用的模型"))
         self.label_6.setText(_translate("Form", "疫情数据预测"))
+        self.label_10.setText(_translate("Form", "请选择预测的标签"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Form", "未来预测"))

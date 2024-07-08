@@ -233,9 +233,9 @@
      <property name="geometry">
       <rect>
        <x>80</x>
-       <y>100</y>
+       <y>60</y>
        <width>161</width>
-       <height>141</height>
+       <height>181</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -266,13 +266,23 @@
       <item>
        <widget class="QComboBox" name="comboBox_3"/>
       </item>
+      <item>
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>请选择预测的标签</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox_4"/>
+      </item>
      </layout>
     </widget>
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>30</y>
+       <y>0</y>
        <width>111</width>
        <height>51</height>
       </rect>

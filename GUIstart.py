@@ -74,10 +74,12 @@ class MyMainWindows(QMainWindow, Ui_MainWindow):
         createtable()
 
     def returnstate(self):
-        state=states[self.comboBox.currentText()]
-        self.returndate()
-        title="美国"+self.comboBox.currentText()+"疫情折线图"
-        data=self.spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table where state={zhou} group by date order by date asc",zhou=state)
+        state = states[self.comboBox.currentText()]
+        date = self.returndate()
+        title = "美国" + self.comboBox.currentText() + "疫情折线图"
+        data = self.spark.sql(
+            "select date,sum(cases) cases,sum(deaths) deaths from table where state={zhou} group by date order by date asc",
+            zhou=state)
         x_data = [row['date'] for row in data.collect()]
         y_data = [row['cases'] for row in data.collect()]
         y_data2 = [row['deaths'] for row in data.collect()]
@@ -89,6 +91,7 @@ class MyMainWindows(QMainWindow, Ui_MainWindow):
         date = [date1, date2]
         print(date)
         return date
+
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
