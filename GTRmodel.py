@@ -66,13 +66,21 @@ class myGBTRegressionModel:
 
         return predictions
 
-    def plot_predictions(self,data,predictions):
+    def plot_predictions(self,data,predictions,title):
         # 提取预测结果用于绘图
         x_data = [row['date'] for row in predictions.collect()]
         y_data = [row[self.type] for row in data.collect()]
         y_data2 = [row['prediction'] for row in predictions.collect()]
 
-        drawline("预测图", x_data, y_data, y_data2)
+        title1=None
+        title2=None
+        if(self.type=="cases"):
+            title1="疫情新增病例"
+            title2="疫情预测新增病例"
+        elif(self.type=="deaths"):
+            title1 = "疫情死亡病例"
+            title2 = "疫情预测死亡病例"
+        drawline(title+"疫情预测图", x_data, y_data, y_data2,title1,title2)
 
     def evaluate_model(self, predictions):
         # 评估模型

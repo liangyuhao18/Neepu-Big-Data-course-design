@@ -6,10 +6,10 @@ from pyspark.sql import SparkSession
 from Temtable import createtable
 
 
-def drawline(title, x_data, y_data, y_data2):
+def drawline(title, x_data, y_data, y_data2,y1axis="疫情新增病例",y2axis="疫情死亡病例"):
     line = (Line(init_opts=opts.InitOpts(width="1600px", height="850px")).add_xaxis(x_data)
-            .add_yaxis("疫情新增病例", y_data)
-            .add_yaxis("疫情死亡病例", y_data2)
+            .add_yaxis(y1axis, y_data)
+            .add_yaxis(y2axis, y_data2)
             .set_global_opts(
         title_opts=opts.TitleOpts(title=title, subtitle="数据来自kaggle"),
         datazoom_opts=[
