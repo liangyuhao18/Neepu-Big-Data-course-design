@@ -141,17 +141,13 @@ def drawpie(title,data):
     )
     webbrowser.open("pie_scroll_legend.html")
 if __name__ == '__main__':
-    # 初始化 findspark 和 SparkSession
     findspark.init()
     spark = SparkSession.builder.appName("BigData").getOrCreate()
 
-    # 创建数据表
     createtable()
-    # 从表中选择数据并展示
     data = spark.sql(
         "select date,sum(cases) cases,sum(deaths) deaths from table where state='California' group by date order by date asc")
     data.show()
-    # 提取数据到列表
     x_data = [row['date'] for row in data.collect()]
     y_data = [row['cases'] for row in data.collect()]
     y_data2 = [row['deaths'] for row in data.collect()]

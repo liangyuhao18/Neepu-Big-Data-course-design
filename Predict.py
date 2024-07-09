@@ -17,7 +17,6 @@ def generate_future_dates(num_days):
 
 if __name__=='__main__':
     findspark.init()
-    # 初始化SparkSession
     spark = SparkSession.builder \
         .appName("LinearRegressionWithDate") \
         .getOrCreate()
