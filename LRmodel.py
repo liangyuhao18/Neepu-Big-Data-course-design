@@ -19,7 +19,6 @@ class myLinearRegressionModel:
         self.type=pre
 
     def load_and_prepare_data(self, data):
-        data.show()
         # 加载数据
         data = data.withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
 
@@ -61,9 +60,6 @@ class myLinearRegressionModel:
         data = self.load_and_prepare_data(date)
         # 预测测试数据集
         predictions = self.lr_model.transform(data)
-
-        # 显示预测结果
-        predictions.show()
 
         return predictions
     def plot_predictions(self, data, predictions,title):

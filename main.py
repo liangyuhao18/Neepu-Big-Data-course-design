@@ -3,7 +3,7 @@ import sys
 
 import findspark
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from pyspark.sql import SparkSession
@@ -77,6 +77,7 @@ class HistoryThread(QThread):
         self.state=state
         self.mainpage=main
     def run(self):
+        self.mainpage.pushButton_2.setEnabled(False)
         if self.state=="美国全境":
             data=self.mainpage.spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table"
                                          " where date between {start} and {end}"
@@ -121,6 +122,7 @@ class HistoryThread(QThread):
             piedata=self.mainpage.spark.sql("select county,sum(cases) cases from table where state = {zhou} and date between {start} and {end} group by county order by cases",zhou=states[self.state],start=self.starttime,end=self.endtime)
             piedata = piedata.collect()
             drawpie("美国"+self.state+"疫情情况饼图",piedata)
+        self.mainpage.pushButton_2.setEnabled(True)
 
 class PredictThread(QThread):
     def __init__(self,day,model,state,type,mainpage):
@@ -142,6 +144,7 @@ class PredictThread(QThread):
         self.state=state
         self.mainpage=mainpage
     def run(self):
+        self.mainpage.pushButton_3.setEnabled(False)
         data=None
         if(self.state=="美国全境"):
             data=self.mainpage.spark.sql("select date,sum(cases) cases,sum(deaths) deaths from table group by date order by date asc")
@@ -157,7 +160,7 @@ class PredictThread(QThread):
             predeict=self.model.make_predictions(self.day)
             self.model.plot_predictions(data,predeict,self.state)
             self.model.save_model(self.modelpath)
-
+        self.mainpage.pushButton_3.setEnabled(True)
 
 
 

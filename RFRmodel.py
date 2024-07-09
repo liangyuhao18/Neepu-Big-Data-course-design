@@ -1,12 +1,10 @@
 from datetime import datetime
 
 import findspark
-from pyspark.ml import PipelineModel
-from pyspark.mllib.tree import RandomForestModel
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, to_date, dayofweek, month, year, day, unix_timestamp
 from pyspark.ml.feature import VectorAssembler
-from pyspark.ml.regression import RandomForestRegressor
+from pyspark.ml.regression import RandomForestRegressor,RandomForestRegressionModel
 from pyspark.ml.evaluation import RegressionEvaluator
 from Draw import drawline
 from Predict import generate_future_dates
@@ -21,7 +19,6 @@ class myRandomForestModel:
         self.type=pre
 
     def load_and_prepare_data(self,data):
-        data.show()
         # 加载数据
         data = data.withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
 
@@ -63,9 +60,6 @@ class myRandomForestModel:
         # 预测测试数据集
         predictions = self.rf_model.transform(data)
 
-        # 显示预测结果
-        predictions.show()
-
         return predictions
 
     def plot_predictions(self,data,predictions,title):
@@ -90,7 +84,7 @@ class myRandomForestModel:
 
     def load_model(self, path):
         # 加载模型
-        self.rf_model = RandomForestModel.load(path)
+        self.rf_model = RandomForestRegressionModel.load(path)
         print(f"Model loaded from {path}")
     def evaluate_model(self, predictions):
         # 评估模型

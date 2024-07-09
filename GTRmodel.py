@@ -19,7 +19,6 @@ class myGBTRegressionModel:
         self.type=pre
 
     def load_and_prepare_data(self, data):
-        data.show()
 
         data = data.withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
 
@@ -55,8 +54,6 @@ class myGBTRegressionModel:
         data = self.load_and_prepare_data(date)
 
         predictions = self.gbt_model.transform(data)
-
-        predictions.show()
 
         return predictions
 
