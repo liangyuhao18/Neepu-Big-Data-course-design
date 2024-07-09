@@ -9,6 +9,7 @@
 <p>pyQt5 5.15.10
 <p>requests 2.31.0
 <p> pandas 2.2.1
+<p>pyecharts 2.0.0
 <p> findspark 2.0.1</p>
 运行
 
